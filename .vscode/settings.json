@@ -1,0 +1,11 @@
+{
+	"files.exclude": {
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/.git": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/.vs": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/.vscode": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/Content": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/DerivedDataCache": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/Intermediate": true,
+		"C:/Users/Eric/Documents/Unreal Projects/Unreal-ToonTanks/Saved": true
+	}
+}
