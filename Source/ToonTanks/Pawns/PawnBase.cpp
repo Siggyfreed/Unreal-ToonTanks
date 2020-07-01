@@ -3,6 +3,10 @@
 
 #include "PawnBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "ToonTanks/Actors/ProjectileBase.h"
+#include "ToonTanks/Components/HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APawnBase::APawnBase()
@@ -21,22 +25,55 @@ APawnBase::APawnBase()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
 	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 }
 
-// Called when the game starts or when spawned
-void APawnBase::BeginPlay()
+void APawnBase::RotateTurret(FVector LookAtTarget)
 {
-	Super::BeginPlay();	
+	// Update TurretMesh rotation to face towards the LookAtTarget passed in from the child class.
+	// TurretMesh->SetWorldRotation()...
+
+	// Find Rotation value to look at.
+	FVector StartLocation = TurretMesh->GetComponentLocation();
+	FRotator TurretRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, FVector(LookAtTarget.X, LookAtTarget.Y, TurretMesh->GetComponentLocation().Z));
+
+	// Rotate Turret.
+	TurretMesh->SetWorldRotation(TurretRotation);
 }
 
-// Called every frame
-void APawnBase::Tick(float DeltaTime)
+void APawnBase::Fire()
 {
-	Super::Tick(DeltaTime);
+	//Get ProjectileSpawnPoint Location && Rotation -> Spawn Projectile class at location towards Rotation.
+	if(ProjectileClass)
+	{
+		FVector SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+		FRotator SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+
+		AProjectileBase* TempProjectile = GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation);
+		TempProjectile->SetOwner(this);
+	}
 }
 
-// Called to bind functionality to input
-void APawnBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APawnBase::HandleDestruction()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if(DeathParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticle, GetActorLocation(), FRotator::ZeroRotator);
+	}
+
+	if(DeathSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
+	}
+
+	if(DeathShake)
+	{
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->PlayCameraShake(DeathShake, 1);
+	}
+}
+
+void APawnBase::PawnDestroyed()
+{
+	HandleDestruction();
 }

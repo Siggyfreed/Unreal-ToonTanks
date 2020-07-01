@@ -24,22 +24,26 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	bool GetPlayerAlive();
+
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArm;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float MoveSpeed = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float RotateSpeed = 100.0f;
 
 	FVector MoveDirection;
 	FQuat RotationDirection;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float MoveSpeed = 100.0f;
+	APlayerController* PlayerControllerRef;
+	FHitResult TraceHitResult;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float RotateSpeed = 100.0f;
+	bool bAlive = true;
 
 	void CalculateMoveInput(float Value);
 	void CalculateRotateInput(float value);
@@ -51,5 +55,6 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
+	virtual void HandleDestruction() override;
 };
